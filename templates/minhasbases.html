@@ -1,0 +1,81 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+{% if listaprocessolen > 0 %}
+<div style="margin: 2.5%; overflow-y: scroll; height: 30vh;">
+    <div class="home-container02 d-flex justify-content-center">
+        <table class="table table-bordered table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nome da base</th>
+                    <th scope="col">Situacao</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(0, listaprocessolen) %}
+                <tr style="height: 1px;">
+                    <th style="text-align: center" >{{listaprocesso[i].dbname}}</th>
+                    <td style="height: 100%;">
+                        <div style="height: 100%;" class="d-flex justify-content-center position-relative">
+                            <p style="margin: 0px;" class="position-absolute top-50 start-50 translate-middle">{{listaprocesso[i].status}}</p>
+                            <form action="/cancelprocess" method="POST">
+                                <button style="margin: 0px; padding: 0px; padding-right: 20px;"
+                                        class="position-absolute top-50 end-0 translate-middle-y btn-close btn-close-white list-inline"
+                                        name="cancelprocess"
+                                        value="{{listaprocesso[i].p}}">
+                                </button>
+                            </form>
+                        </div>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+<div style="margin: 2.5%; overflow-y: scroll; height: 50vh;">
+    <div class="home-container02 d-flex justify-content-center">
+        <table class="table table-bordered table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Nome da base</th>
+                    <th scope="col">Horario de Restauracao</th>
+                    <th scope="col">Situacao</th>
+                    <th scope="col">Tamanho da base</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(0, userstatslen-1) %}
+                <tr style="height: 1px;">
+                    <th style="text-align: center" >{{userstats[i][2]}}</th>
+                    <td style="text-align: center" >{{userstats[i][0]}}</td>
+                    <td style="text-align: center" >{{userstats[i][3]}}</td>
+                    <td style="height: 100%;">
+                        <div style="height: 100%;" class="d-flex justify-content-center position-relative">
+                            <p style="margin: 0px;" class="position-absolute top-50 start-50 translate-middle">{{userstats[i][1]}}</p>
+                            {% if userstats[i][3] == 'RESTORED' %}
+                            <form action="/dropbase" method="POST">
+                                <button style="margin: 0px; padding: 0px; padding-right: 20px;"
+                                        class="position-absolute top-50 end-0 translate-middle-y btn-close btn-close-white list-inline"
+                                        name="dropbase"
+                                        value="{{userstats[i][2]}}">
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if userstatslen > 1 %}
+                    <tr>
+                        <td style="text-align: center" ></td>
+                        <td style="text-align: center" ></td>
+                        <td >Total</td>
+                        <td style="text-align: center" >{{userstats[userstatslen-1][1]}}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

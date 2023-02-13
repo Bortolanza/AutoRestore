@@ -1,0 +1,43 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="card-body py-5 px-md-5">
+    <form action="/subir" method="POST" name="subirbase" onsubmit="return validateForm()" >
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-8" style="width: 50vw;">
+                <h2 class="fw-bold mb-5">Subir base</h2>
+                <h6 class="fw-bold mb-5">Para restaurar, o backup deve estar na pasta designada</h6>
+                    <!-- Email input -->
+                    {% if requestrepeat == '1' %}
+                        <div class="alert alert-danger" role="alert">
+                            Requisicao para essa base ja esta na fila!
+                        </div>
+                    {% endif %}
+                    <div class="form-outline mb-4">
+                      <input type="text" id="dbname" name="dbname" class="form-control" placeholder="nome_da_base_cliente_dia_mes" required/>
+                      <label class="form-label" for="dbname">Nome  da Base</label>
+                    </div>
+                    <div class="form-outline mb-5">
+                        <select class="form-control" name="file" placeholder="Escolha um backup" required>
+                            <option value="">Escolha um backup</option>
+                        {% for l in bases_avaliable %}
+                            <option value="{{l}}">{{l}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <!-- Submit button -->
+                    <div style="margin-top: 2.5%">
+                        <button type="submit" class="btn btn-primary btn-block mb-4"> Restaurar </button>
+                    </div>
+
+            </div>
+        </div>
+        <div>
+
+        </div>
+    </form>
+</div>
+{% block scripts %}
+ <script src="{{url_for('static', filename='/js/formvalidation.js')}}"></script>
+{% endblock %}
+{% endblock %}

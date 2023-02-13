@@ -1,0 +1,46 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="card-body py-5 px-md-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-5">Dump base</h2>
+            <form action="/dump" method="POST" name="dumpbase" onsubmit="return validateForm()" >
+                <!-- Email input -->
+                {% if requestrepeat == '1' %}
+                    <div class="alert alert-danger" role="alert">
+                        Requisicao para essa base ja esta na fila!
+                    </div>
+                {% endif %}
+                <div class="form-outline mb-4">
+                  <input type="text" id="dumpname" name="dumpname" class="form-control" placeholder="Nome para o arquivo" required/>
+                  <label class="form-label" for="dumpname">Nome do Dump</label>
+                </div>
+                <div class="form-outline mb-5">
+                    <select class="form-control" name="file" placeholder="Escolha uma base" required>
+                        <option value="">Escolha uma base</option>
+                    {% for l in bases_avaliable %}
+                        <option value="{{l[0]}}">{{l[0]}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-outline mb-5">
+                    <select class="form-control" name="directory" placeholder="Escolha direcao para o dump" required>
+                        <option value="">Escolha uma pasta</option>
+                    {% for l in folders_avaliable %}
+                        <option value="{{l}}">{{l}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <!-- Submit button -->
+                <div style="margin-top: 2.5%">
+                    <button type="submit" class="btn btn-primary btn-block mb-4"> Dump </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% block scripts %}
+ <script src="{{url_for('static', filename='/js/formvalidation.js')}}"></script>
+{% endblock %}
+{% endblock %}

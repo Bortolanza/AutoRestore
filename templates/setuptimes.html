@@ -1,0 +1,114 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="card-body py-5 px-md-2">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8" style="width: 60vw;">
+            <h3 class="fw-bold mb-5">Funcionalidade</h3>
+                <!-- Email input -->
+                {% if requestrepeat == '1' %}
+                    <div class="alert alert-danger" role="alert">
+                        Requisicao para essa base ja esta na fila!
+                    </div>
+                {% endif %}
+                    <form action="/function" method="POST" name="function" >
+                        <input type="hidden" name="requesttype" value="0"/>
+                        <div class="row d-flex justify-content-left">
+                            <select class="form-select" style="width: 70%; height: 50%; margin-right: 5%" name="functid" placeholder="Escolha um backup" required>
+                            {% if chosen[0] is not none %}
+                                <option value="{{chosen}}">{{chosen[1]}}</option>
+                            {% else %}
+                                <option value="">Escolha uma funcionalidade</option>
+                            {% endif %}
+                            {% for l in funcionalities %}
+                                <option value="{{l}}">{{l[1]}}</option>
+                            {% endfor %}
+                            </select>
+                            <button type="submit" style="width: 15%; height: 50%;" class="btn btn-primary btn-block mb-4"> Buscar </button>
+                            <hr class="border-2 border-top border-dark">
+                        </div>
+                    </form>
+                    <!-- Submit button -->
+                <div>
+                {% if chosen[0] is not none %}
+                    <form action="/function" method="POST" name="addperiod" onsubmit="return validateDate()">
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-left form-outline mb-1">
+                                <h5 style="width: 50%;">INICIAL</h5>
+                                <h5 style="width: 50%;">FINAL</h5>
+                                <label style="width: 10%;">Hora</label>
+                                <label style="width: 40%;">Minuto</label>
+                                <label style="width: 10%;">Hora</label>
+                                <label style="width: 40%;">Minuto</label>
+                                <select id="inihour" style="width: 10%;" class="ps-3 form-select" name="inihour" required>
+                                {% for hi in range(0, 24)%}
+                                    <option value="{{('' ~ hi).zfill(2)}}">{{hi}}</option>
+                                {% endfor %}
+                                </select>
+                                <select id="inimin" style="width: 10%;" class="ps-3 form-select" name="inimin" required>
+                                {% for mi in range(0, 60) %}
+                                    <option value="{{('' ~ mi).zfill(2)}}">{{("" ~ mi).zfill(2)}}</option>
+                                {% endfor %}
+                                </select>
+                                <div style="width: 30%;"></div>
+                                <select id="fimhour" style="width: 10%;" class="ps-3 form-select" name="fimhour" required>
+                                {% for hf in range(0, 24)%}
+                                    <option value="{{('' ~ hf).zfill(2)}}">{{hf}}</option>
+                                {% endfor %}
+                                </select>
+                                <select id="fimmin" style="width: 10%;" class="ps-3 form-select" name="fimmin" required>
+                                {% for mf in range(0, 60) %}
+                                    <option value="{{('' ~ mf).zfill(2)}}">{{("" ~ mf).zfill(2)}}</option>
+                                {% endfor %}
+                                </select>
+                                <input type="hidden" id="functid-ist" name="functid" value="{{chosen}}"/>
+                                <input type="hidden" name="requesttype" value="1"/>
+                                <button type="submit" style="width: 10%;" class="ms-5 btn btn-primary btn-block mr-2">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="card-footer">
+                        {% if timeslen is not none %}
+                            <table class="table table-bordered table-dark table-striped">
+                                <thead class="">
+                                    <tr>
+                                        <th scope="col">Horario inicial</th>
+                                        <th scope="col">Horario final</th>
+                                        <th scope="col">Remover</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for x in range(timeslen) %}
+                                    <tr>
+                                        <th style="text-align: center" >{{times[x][0]}}</th>
+                                        <td style="text-align: center" >{{times[x][1]}}</td>
+                                        <td style="height: 100%;">
+                                            <div style="height: 100%;" class="d-flex justify-content-left position-relative">
+                                                <form action="/function" method="POST" name="removeperiod">
+                                                    <button style="margin: 0px; padding: 0px; padding-right: 20px;"
+                                                            class="position-absolute top-50 end-0 btn-close btn-close-white list-inline"
+                                                            name="functperiodid"
+                                                            value="{{times[x][2]}}">
+                                                    </button>
+                                                    <input type="hidden" id="functid_dlt" name="functid" value="{{chosen}}"/>
+                                                    <input type="hidden" name="requesttype" value="3"/>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% block scripts %}
+<script src="{{url_for('static', filename='/js/datevalidation.js')}}"></script>
+{% endblock %}
+{% endblock %}
+
+

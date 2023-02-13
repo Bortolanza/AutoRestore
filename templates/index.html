@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>LogIn</title>
+{% endblock %}
+
+{% block content%}
+<!-- Section: Design Block -->
+<section class="text-center">
+  <!-- Background image -->
+  <div class="p-5 bg-image" style="
+        background-image: url('{{url_for('static',filename='images/backgroundlogin.jpg')}}');
+        height: 300px;
+        "></div>
+  <!-- Background image -->
+
+  <div class="card mx-4 mx-md-5 shadow-5-strong" style="
+        margin-top: -100px;
+        background: hsla(0, 0%, 100%, 0.8);
+        backdrop-filter: blur(30px);
+        ">
+    <div class="card-body py-5 px-md-5">
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-5">LogIn</h2>
+          <form action="/login" method="POST">
+            <!-- Email input -->
+            {% if login == 'failed' %}
+              <div class="alert alert-danger" role="alert">
+                Usuario ou senha invalido!
+              </div>
+            {% endif %}
+            <div class="form-outline mb-4">
+              <input type="text" id="username" name="username" class="form-control"/>
+              <label class="form-label" for="username">Usuario</label>
+            </div>
+
+            <!-- Password input -->
+            <div class="form-outline mb-4">
+              <input type="password" id="pword" name="pword" class="form-control" />
+              <label class="form-label" for="pword">Senha</label>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary btn-block mb-4">
+              LogIn
+            </button>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Section: Design Block -->
+{% endblock %}

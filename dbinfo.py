@@ -88,7 +88,16 @@ def getfunctionalities(conn, functionalityid):
 
 
 def getfunctionalitiesperiods(conn, functionalityid):
-    return conn.executequery("SELECT initialhour"
-                             "     , finalhour"
+    return conn.executequery("SELECT initialhour::text"
+                             "     , finalhour::text"
+                             "     , functionalityperiodid"
                              "  FROM functionalityperiod"
                              " WHERE functionalityid = (%s)::int" % functionalityid, 1)
+
+
+def checkperiods(conn, functionalityid):
+    return conn.executequery("SELECT TRUE"
+                            "   FROM functionalityperiod"
+                             " WHERE now()::time BETWEEN initialhour AND finalhour"
+                             "   AND functionalityid = %s::int"
+                             " LIMIT 1" % functionalityid, 1)

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+            <title>Desbravador 1.4 - Super ultra automatizador</title>
+        {% endblock %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        {% block boots %}
+            <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+        {% endblock %}
+
+        {% block styles %}
+            <!-- Bootstrap CSS -->
+        {% endblock %}
+
+        <title>Your page title</title>
+    </head>
+    <body>
+        {% block navbar %}
+        {% endblock %}
+        <!-- Your page content -->
+        {% block content %}
+        {% endblock %}
+            <script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

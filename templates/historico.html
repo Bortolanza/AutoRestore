@@ -1,0 +1,27 @@
+
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div style="margin: 2.5%; overflow-y: scroll; height: 60vh;">
+    <div class="home-container02 d-flex justify-content-center">
+        <table class="table table-bordered table-dark table-striped">
+            <thead class="">
+                <tr>
+                    <th scope="col">Nome da Base</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Data De Modificacao</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range (0,userstatslen) %}
+                <tr>
+                    <th style="text-align: center" >{{userstats[i][1]}}</th>
+                    <td style="text-align: center" >{{userstats[i][2]}}</td>
+                    <td style="text-align: center" >{{userstats[i][0]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

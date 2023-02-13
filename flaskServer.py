@@ -1,8 +1,8 @@
-from dbinfo import getuserstats, getuserbases, getbaseoid, getuserhistory, getallbases, getuser, getfunctionalities, getfunctionalitiesperiods
+from dbinfo import getuserstats, getuserbases, getbaseoid, getuserhistory, getallbases, getuser, getfunctionalities, getfunctionalitiesperiods, checkperiods
 from osfunctions import getdiskspace, getfiles, startdatabasethread, killprocess, dropbase as osdropbase, getdumpfolders
 from flask import Flask, render_template, send_file, request, redirect, Response, url_for, session
+from dboperations import updinfodelbase, newperiod, removeperiod
 from sessioncheks import checksessioninfo
-from dboperations import updinfodelbase
 from flask_bootstrap import Bootstrap5
 from requisicoes import Requisicoes
 from flask_session import Session
@@ -30,7 +30,7 @@ else:
 
     @app.route('/favicon.ico')
     def icon():
-        return send_file('static/images/desbraicon.png')
+        return send_file('static/images/icon.png')
 
 
     @app.post('/login')
@@ -62,7 +62,7 @@ else:
 
     @app.route('/subirbase')
     def subirbase():
-        if 'userid' not in session or not checksessioninfo(session['userid']):
+        if 'userid' not in session or not checksessioninfo(session['userid']) or not (checkperiods(globals.conn, 1)):
             return redirect('/')
         else:
             try:
@@ -80,6 +80,8 @@ else:
 
     @app.post('/subir')
     def subir():
+        if not (checkperiods(globals.conn, 1)):
+            return redirect(url_for('home'))
         skip = 0
         requisitado = Requisicoes(request.form['dbname'], request.form['file'], session['userid'], session['nome'], "RESTORE", None)
         for x in globals.requests_list:
@@ -98,7 +100,7 @@ else:
 
     @app.route('/dumpbase')
     def dumpbase():
-        if 'userid' not in session or not checksessioninfo(session['userid']):
+        if 'userid' not in session or not checksessioninfo(session['userid']) or not (checkperiods(globals.conn, 2)):
             return redirect('/')
         else:
             try:
@@ -119,6 +121,8 @@ else:
 
     @app.post('/dump')
     def dump():
+        if not checkperiods(globals.conn, 2):
+            return redirect(url_for('home'))
         requisitado = Requisicoes(request.form['dumpname'], request.form['file'], session['userid'], session['nome'], "DUMP", request.form['directory'])
         globals.addlistlock.acquire(timeout=3)
         if globals.addlistlock.locked():
@@ -129,6 +133,7 @@ else:
         if not globals.runningthread.locked():
             startdatabasethread()
         return redirect(url_for('dumpbase', requestrepeat=0))
+
 
 
 
@@ -194,8 +199,13 @@ else:
         session['privilege'] not in ["MASTER", "ADMIN"]:
             return redirect('/')
         chosen = [None]
+        arrtimes = None
+        timeslen = None
         if request.args.get('chosen') is not None:
             chosen = ast.literal_eval(request.args.get('chosen'))
+            if request.args.get('times'):
+                arrtimes = ast.literal_eval(request.args.get('times'))
+                timeslen = len(arrtimes)
         functionalities = getfunctionalities(globals.conn, chosen[0])
         return render_template('setuptimes.html',
                                nome_usuario=session['nome'],
@@ -203,7 +213,8 @@ else:
                                requestrepeat=request.args.get('requestrepeat'),
                                privilege=session['privilege'],
                                funcionalities=functionalities,
-                               times=request.args.get('times'),
+                               times=arrtimes,
+                               timeslen=timeslen,
                                chosen=chosen)
 
 
@@ -211,6 +222,20 @@ else:
     def functions():
         functid = ast.literal_eval(request.form['functid'])
         funstr = request.form['functid']
+        if request.form['requesttype'] == "1":
+            initime = request.form['inihour'] + ":" + request.form['inimin']
+            fimtime = request.form['fimhour'] + ":" + request.form['fimmin']
+            newperiod(globals.conn, initime, fimtime, functid[0])
+        elif request.form['requesttype'] == "3":
+            removeperiod(globals.conn, request.form['functperiodid'])
+        times = str(getfunctionalitiesperiods(globals.conn, functid[0]))
+        return redirect(url_for('functionsetup', times=times, chosen=funstr))
+
+
+    @app.post('/addperiod')
+    def addperiod():
+        funstr = request.form['functid']
+        functid = ast.literal_eval(request.form['functid'])
         times = getfunctionalitiesperiods(globals.conn, functid[0])
         return redirect(url_for('functionsetup', times=times, chosen=funstr))
 
@@ -230,10 +255,6 @@ else:
                 globals.requests_list.pop(x)
         globals.rmvlistlock.release()
         return redirect('/minhasbases')
-
-
-    # @app.post('/acceptrequest')
-    # def acceptrequest():
 
 
     @app.errorhandler(404)
